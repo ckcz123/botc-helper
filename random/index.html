@@ -5,8 +5,12 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 
-<body>
-    <b>角色选择</b> <button class="btn btn-default btn-xs" onclick="$('#choose-role').toggle()">显示/隐藏</button>
+<body style="padding: 15px">
+    <h1>血染钟楼角色抽取</h1>
+
+    <hr/>
+
+    <b>角色列表</b> <button class="btn btn-default btn-xs" onclick="$('#choose-role').toggle()">显示/隐藏</button>
 
     <div id="choose-role" style="margin-top: 20px">
         <p>复制下述代码到集石魔典控制台中，并将输出结果粘贴到输入框中</p>
@@ -18,8 +22,9 @@
         </p>
 
         <p>
-        <input id="input" style="width: 500px" placeholder="角色1,角色2,..." />
+        <textarea id="input" style="width: 250px; height: 100px" placeholder="角色1,角色2,..."></textarea><br/>
         <button class="btn btn-default btn-xs" onclick="confirmRole()">确定</button>
+        <button style='margin-left: 10px' class="btn btn-default btn-xs" onclick="$('#input').val('邪恶,善良,善良');confirmRole();">旅行者阵营抽取</button>
         </p>
         
         <p id="all-roles"></p>
@@ -74,7 +79,7 @@ function updateInfo() {
         one.on('click', function() {
             if ($(this).text().length > 0) {
                 selectedRoles.push($(this).attr('role'));
-                unselectedRoles = unselectedRoles.filter(x => x != $(this).attr('role'));
+                unselectedRoles.splice(unselectedRoles.findIndex(x => x == $(this).attr('role')), 1);                
                 shuffle();
             } else {
                 $(this).css('background-color', 'lightgreen');
