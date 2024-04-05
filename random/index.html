@@ -44,7 +44,6 @@
 
 <script>
 
-var allRoles = [];
 var selectedRoles = [];
 var unselectedRoles = [];
 
@@ -91,13 +90,11 @@ function updateInfo() {
 }
 
 function confirmRole() {
-    const val = $('#input').val();
-    allRoles = val.split(',');
-    window.location.hash = val.length == 0 ? '' : ('#' + btoa(encodeURIComponent(val)));
-    console.log('All Roles: ', allRoles);
-    $('#all-roles').text(allRoles.length == 0 ? '无角色选择' : '已指定' + allRoles.length + '名角色')
+    const val = $('#input').val().trim();
     selectedRoles = [];
-    unselectedRoles = [...allRoles];
+    unselectedRoles = val.length == 0 ? [] : val.split(',');
+    window.location.hash = val.length == 0 ? '' : ('#' + btoa(encodeURIComponent(val)));
+    $('#all-roles').text(unselectedRoles.length == 0 ? '无角色选择' : '已指定' + unselectedRoles.length + '名角色')
     shuffle();
 }
 
@@ -105,8 +102,10 @@ $(window).on('load', () => {
     const hash = window.location.hash;
     if (hash.startsWith('#')) {
         $('#input').val(decodeURIComponent(atob(hash.substring(1))));
-        confirmRole();
+        $('#choose-role').hide();
+        $('#selected-roles').hide();
     }
+    confirmRole();
 });
 
 </script>
