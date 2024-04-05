@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <b>角色选择</b> <button class="btn btn-default btn-xs" onclick="$('#choose-role').toggle()">显示/隐藏</button>
+
+    <div id="choose-role" style="margin-top: 20px">
+        <p>复制下述代码到集石魔典控制台中，并将输出结果粘贴到输入框中</p>
+        <p>
+        <code id="copy-code">
+            console.log([...document.querySelectorAll('.player textPath')].map(x=>x.innerHTML.trim()).join(','))
+        </code>
+        <button class="btn btn-default btn-xs" style="margin-left: 10px" onclick="navigator.clipboard.writeText($('#copy-code').text().trim())">复制</button>
+        </p>
+
+        <p>
+        <input id="input" style="width: 500px" placeholder="角色1,角色2,..." />
+        <button class="btn btn-default btn-xs" onclick="confirmRole()">确定</button>
+        </p>
+        
+        <p id="all-roles"></p>
+    </div>
+
+    <hr/>
+    <b>已选择角色</b> <span id="selected-role-cnt">0</span> <button class="btn btn-default btn-xs" style="margin-left:10px" onclick="$('#selected-roles').toggle()">显示/隐藏</button>
+    <div id="selected-roles" style="margin-top: 5px"></div>
+
+    <hr/>
+    <b>未选择角色</b> <span id="unselected-role-cnt">0</span> <button class="btn btn-default btn-xs" style="margin-left:10px" onclick="shuffle()">打乱顺序</button>
+
+    <div id="select-panel">
+    </div>
+
+    <div id="hint"></div>
+
+<script>
+
+var allRoles = [];
+var selectedRoles = [];
+var unselectedRoles = [];
+
+function shuffle() {
+    unselectedRoles = unselectedRoles.sort((a, b) => 0.5 - Math.random());
+    updateInfo();
+}
+
+function updateInfo() {
+    $('#selected-role-cnt').text(selectedRoles.length);
+    $('#unselected-role-cnt').text(unselectedRoles.length);
+    $('#selected-roles').text(selectedRoles.length  == 0 ? '无角色选择' : selectedRoles.join('; '));
+
+    const selectPanel = $('#select-panel');
+    selectPanel.empty();
+    unselectedRoles.forEach(role => {
+        let one = $('<div/>');
+        one.css({
+            'width': '80px',
+            'height': '80px',
+            'margin': '15px',
+            'background-color': 'grey',
+            'display': 'inline-block',
+            'border-radius': '50%',
+            'cursor': 'pointer',
+            'text-align': 'center',
+            'vertical-align': 'top',
+            'align-content': 'center',
+            'font-weight': 'bold',
+        });
+        one.attr('role', role);
+        one.on('click', function() {
+            if ($(this).text().length > 0) {
+                selectedRoles.push($(this).attr('role'));
+                unselectedRoles = unselectedRoles.filter(x => x != $(this).attr('role'));
+                shuffle();
+            } else {
+                $(this).css('background-color', 'lightgreen');
+                $(this).text($(this).attr('role'));
+            }
+        });
+        selectPanel.append(one);
+    });
+}
+
+function confirmRole() {
+    const val = $('#input').val();
+    allRoles = val.split(',');
+    window.location.hash = val.length == 0 ? '' : ('#' + btoa(encodeURIComponent(val)));
+    console.log('All Roles: ', allRoles);
+    $('#all-roles').text(allRoles.length == 0 ? '无角色选择' : '已指定' + allRoles.length + '名角色')
+    selectedRoles = [];
+    unselectedRoles = [...allRoles];
+    shuffle();
+}
+
+$(window).on('load', () => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#')) {
+        $('#input').val(decodeURIComponent(atob(hash.substring(1))));
+        confirmRole();
+    }
+});
+
+</script>
+</body>
+</html>
